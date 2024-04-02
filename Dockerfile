@@ -4,11 +4,10 @@ ARG ALPINE_VERSION=3.17
 FROM node:${NODE_VERSION}-alpine${ALPINE_VERSION}
 
 ARG RCLONE_VERSION=1.66.0
-ARG ZX_VERSION=7.1.1
+ARG NPM_ZX_VERSION=7.1.1
+ARG NPM_WEBDAV_VERSION=5.5.0
 
 ENV XDG_CONFIG_HOME=/config
-
-COPY backup-restore.mjs /usr/local/bin/backup-restore.mjs
 
 # Install Bash and Rclone and ZX
 RUN set -eux; \
@@ -18,7 +17,12 @@ RUN set -eux; \
     unzip -q rclone-v${RCLONE_VERSION}-linux-amd64.zip; \
     mv rclone-v${RCLONE_VERSION}-linux-amd64/rclone /usr/local/bin/; \
     rm -rf rclone-v${RCLONE_VERSION}-linux-amd64.zip rclone-v${RCLONE_VERSION}-linux-amd64; \
-    npm install -g zx@${ZX_VERSION}; \
-    chmod +x /usr/local/bin/backup-restore.mjs
+    npm install -g zx@${NPM_ZX_VERSION}; \
+    cd /usr/local/bin; \
+    npm install webdav@${NPM_WEBDAV_VERSION}
+
+COPY backup-restore.mjs /usr/local/bin/backup-restore.mjs
+
+RUN chmod +x /usr/local/bin/backup-restore.mjs
 
 ENTRYPOINT ["/usr/local/bin/backup-restore.mjs"]

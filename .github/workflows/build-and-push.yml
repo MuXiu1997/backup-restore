@@ -19,11 +19,15 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Format Date
+        run:
+          echo "DATE_TAG=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: muxiu1997/backup-restore:latest
+          tags: muxiu1997/backup-restore:${{ env.DATE_TAG }}
 
       - name: Update Docker Images Description
         uses: peter-evans/dockerhub-description@v3
